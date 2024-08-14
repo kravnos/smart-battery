@@ -49,10 +49,10 @@ function Update-TaskXML {
 
         $idleTriggerEnabledNode = $xml.SelectNodes("//ns:Triggers/ns:IdleTrigger/ns:Enabled", $namespaceManager)
         foreach ($node in $idleTriggerEnabledNode) {
-            if ($sleepTimeoutMinutes -eq 0) {
-                $node.InnerText = "false"
-            } else {
+            if ($sleepTimeoutMinutes -gt 0) {
                 $node.InnerText = "true"
+            } else {
+                $node.InnerText = "false"
             }
         }
     }
@@ -65,7 +65,7 @@ function Update-TaskXML {
 # Function to get the sleep timeout value
 function Get-SleepTimeout {
     # Run the powercfg command and capture its output
-    $powercfgOutput = powercfg /query SCHEME_CURRENT
+    $powercfgOutput = powercfg /query SCHEME_CURRENT SUBSLEEP
 
     # Split the output into lines
     $lines = $powercfgOutput -split "`n"
@@ -78,9 +78,9 @@ function Get-SleepTimeout {
 
     # Loop through each line to find relevant settings
     foreach ($line in $lines) {
-        if ($line -match '\(Sleep\)') {
+        if ($line -match '\(Sleep after\)') {
             $inSleepAfterSection = $true
-        } elseif ($line -match 'Subgroup GUID:') {
+        } elseif ($line -match 'Power Setting GUID:') {
             $inSleepAfterSection = $false
         }
 

@@ -7,9 +7,17 @@ SET "date=%date: =-%"
 SET "date=%date:/=-%"
 SET "LOGFILE=logs\battery-%date%.log"
 
+FOR /F "tokens=2 delims=:" %%A IN ('powercfg /query SCHEME_CURRENT SUB_SLEEP STANDBYIDLE ^| findstr /C:"Current DC Power Setting Index:"') DO (
+	SET /A "TIMEOUT=%%A-900"
+)
+
 IF NOT "%params%"=="" (
 	IF "%params%"=="sleep" (
-		TIMEOUT /T 2700 /NOBREAK
+		IF NOT "%TIMEOUT%"=="" (
+			IF %TIMEOUT% GTR 0 (
+				TIMEOUT /T %TIMEOUT% /NOBREAK
+			)
+		)
 	)
 	GOTO SKIP
 )
@@ -27,8 +35,8 @@ EXIT /B
 "%WINDIR%\SYSTEM32\WindowsPowerShell\v1.0\powershell.exe" -executionpolicy bypass -file "battery.ps1" %params%
 
 FOR /F "TOKENS=1,2 DELIMS=:" %%A IN ("%TIME%") DO (
-	set "hh=%%A"
-	set "mm=%%B"
+	SET "hh=%%A"
+	SET "mm=%%B"
 )
 
 IF NOT "%params%"=="" (
@@ -38,7 +46,11 @@ IF NOT "%params%"=="" (
 	)
 
 	IF "%params%"=="sleep" (
-		rundll32.exe powrprof.dll,SetSuspendState Sleep
+		IF NOT "%TIMEOUT%"=="" (
+			IF %TIMEOUT% GTR 0 (
+				rundll32.exe powrprof.dll,SetSuspendState 0,1,0
+			)
+		)
 	)
 )
 
