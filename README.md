@@ -1,6 +1,6 @@
 # Battery Monitor and Smart Device Control 🔋
 
-This project is a PowerShell script designed to monitor the battery levels of a Windows laptop and control a smart device (like a plug or switch) via Tuya's API based on the battery charge state. The script can automatically turn the device on or off depending on the battery level, helping to preserve the battery of your laptop by charging optimally.
+This project is a PowerShell script designed to monitor the battery levels of a Windows laptop and control a smart device (like a plug or switch) via `Tuya's API` based on the battery charge state. The script can automatically turn the smart device on or off depending on the battery level, helping to preserve the battery health of your laptop by charging optimally.
 
 Note: `Smart Life`, `TCP` and many other devices will also work under Tuya API.
 
@@ -59,10 +59,12 @@ The script logs its activity under a logs folder with timestamps, helping you tr
 
 ## Uninstallation 🗑️
 
-To remove the script and its tasks:
+Run the `uninstall.bat` file as an administrator to remove all configurations and tasks.
 
-1. Open Task Scheduler and delete the `BATTERY` and `BATTERY-SLEEP` tasks.
-2. Remove any registry entries created by the `install.bat` script related to group policies.
+This script will:
+  - Delete the scheduled tasks created by the installation.
+  - Remove the script from Group Policy shutdown events.
+  - Clean up any related configuration files.
 
 ## Troubleshooting 🛠️
 
