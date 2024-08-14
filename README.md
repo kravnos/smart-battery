@@ -1,22 +1,22 @@
-# Battery Monitor and Control Script
+# Battery Monitor and Smart Device Control 🔋
 
 This project is a PowerShell script designed to monitor the battery levels of a Windows laptop and control a smart device (like a plug or switch) via Tuya's API based on the battery charge state. The script can automatically turn the device on or off depending on the battery level, helping to manage power consumption.
 
 Note: `Smart Life`, `TCP` and many other devices will also work under Tuya API.
 
-## Features
+## Features ✨
 
 - **Battery Level Monitoring**: Continuously monitors the battery level of the device.
 - **Smart Device Control**: Turns a smart device on or off based on predefined battery level thresholds.
 - **Automatic Task Scheduling**: Sets up scheduled tasks to run the script periodically and during system shutdown events.
 - **Configuration Management**: Easily configurable settings stored in `config.ini`.
 
-## Prerequisites
+## Requirements 🛠️
 
 - Windows 10/11 operating system.
 - A smart device that is controlled via Tuya's API.
 
-## Installation
+## Installation 🚀
 
 ### Step 1: Download and Extract
 
@@ -40,7 +40,7 @@ Note: `Smart Life`, `TCP` and many other devices will also work under Tuya API.
   - **bizType**: The business type for Tuya (default: smart_life).
   - **from**: The source from which the request is being made (default: tuya).
 
-### Step 3: Installion
+### Step 3: Install
 
 Run the `install.bat` file as an administrator to create and configure the necessary tasks.
 
@@ -49,26 +49,22 @@ This script will:
   - Schedule tasks to run the PowerShell script at startup and during sleep events.
   - Register the script in the Group Policy for shutdown events.
 
-### Step 4: Run the Script
+## Usage 📖
 
-Once the scheduled tasks are set up, the script will run automatically according to the configured intervals. It will control the smart device based on the battery levels as specified in config.ini.
+After successful install, the script will run automatically according to the configured intervals. It will control the smart device based on the battery levels as specified in config.ini.
 
-## Usage
+## Logging 📄
 
-- **Task Scheduler**: The script is configured to run periodically and during system shutdown or sleep.
+The script logs its activity under a logs folder with timestamps, helping you track its actions and any potential errors.
 
-## Logging
-
-The script logs its activity to the console with timestamps, helping you track its actions and any potential errors.
-
-## Uninstallation
+## Uninstallation 🗑️
 
 To remove the script and its tasks:
 
 1. Open Task Scheduler and delete the `BATTERY` and `BATTERY-SLEEP` tasks.
 2. Remove any registry entries created by the `install.bat` script related to group policies.
 
-## Troubleshooting
+## Troubleshooting 🛠️
 
 - Ensure that your Wi-Fi name is correctly specified in `config.ini`.
 - Make sure that the smart device name matches the one used in your Tuya app.
