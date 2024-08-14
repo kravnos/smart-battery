@@ -1,6 +1,9 @@
 # Get the current directory where the script is running
 $currentDir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 
+# Path to the INI file
+$iniFile = Join-Path -Path $env:WINDIR -ChildPath "System32\GroupPolicy\Machine\Scripts\scripts.ini"
+
 # Paths to the XML files
 $task1XML = "BATTERY.XML"
 $task2XML = "BATTERY-SLEEP.XML"
@@ -98,3 +101,24 @@ $sleepTimeoutMinutes = [math]::Max((Get-SleepTimeout) - 15, 0)
 # Update the XML files
 Update-TaskXML -xmlPath $task1XML -currentDir $currentDir
 Update-TaskXML -xmlPath $task2XML -currentDir $currentDir -sleepTimeoutMinutes $sleepTimeoutMinutes
+
+# Handle the scripts.ini file
+if (-not (Test-Path $iniFile)) {
+    # Create the ini file with UTF-16 LE encoding
+    $content = "[Shutdown]`r`n"
+    [System.IO.File]::WriteAllText($iniFile, $content, [System.Text.Encoding]::Unicode)
+
+    # Set the file to hidden
+    (Get-Item $iniFile).Attributes = [System.IO.FileAttributes]::Hidden
+}
+
+# Read existing content
+$existingContent = [System.IO.File]::ReadAllText($iniFile, [System.Text.Encoding]::Unicode)
+
+# Check if 0CmdLine= entry is present
+if ($existingContent -notmatch "0CmdLine=") {
+    $cmdLineEntry = "0CmdLine=$currentDir\battery.bat`r`n"
+    $parametersEntry = "0Parameters=kill`r`n"
+    [System.IO.File]::AppendAllText($iniFile, $cmdLineEntry, [System.Text.Encoding]::Unicode)
+    [System.IO.File]::AppendAllText($iniFile, $parametersEntry, [System.Text.Encoding]::Unicode)
+}

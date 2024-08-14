@@ -34,12 +34,14 @@ reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\
 set iniFile=%WINDIR%\System32\GroupPolicy\Machine\Scripts\scripts.ini
 
 if exist "%iniFile%" (
+    attrib -h "%iniFile%"
     del "%iniFile%"
 )
 
 gpupdate /force
 
 echo Success: Group Policy Task deleted.
+echo Uninstall Complete.
 
 pause
 exit /b 0

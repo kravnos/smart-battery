@@ -62,21 +62,10 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\Shu
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\Shutdown\0\0" /v "IsPowershell" /t REG_DWORD /d 00000000 /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\Shutdown\0\0" /v "ExecTime" /t REG_BINARY /d 00000000000000000000000000000000 /f
 
-set iniFile=%WINDIR%\System32\GroupPolicy\Machine\Scripts\scripts.ini
-
-if not exist "%iniFile%" (
-    echo [Shutdown] > "%iniFile%"
-)
-
-(for /f "tokens=*" %%A in ('findstr /b /c:"0CmdLine=" "%iniFile%"') do (set existingLine=%%A)) || (set existingLine=)
-if "%existingLine%"=="" (
-    echo 0CmdLine=%~dp0battery.bat >> "%iniFile%"
-    echo 0Parameters=kill >> "%iniFile%"
-)
-
 gpupdate /force
 
 echo Success: Group Policy Task imported.
+echo Installation Complete.
 
 pause
 exit /b 0
