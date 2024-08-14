@@ -31,7 +31,7 @@ Note: `Smart Life`, `TCP` and many other devices will also work under Tuya API.
   - **BATTERY_LOW**: The battery percentage below which the device should be turned on (default: 20 percent).
   - **tokenExpiry**: The number of days before the token expires and needs to be refreshed (default: 10 days).
   - **idExpiry**: The number of minutes before the device ID expires and needs to be refreshed (default: 17 minutes).
-  - **loopTime**: The interval (in seconds) between each check of the battery status (default: 600 seconds).
+  - **loopTime**: The interval between each check of the battery status (default: 600 seconds).
   - **wifiName**: The SSID of the Wi-Fi network that the script will monitor (default: SSID).
   - **deviceName**: The name of the device to control (default: DEVICENAME).
   - **userName**: Your Tuya account username (default: email@domain.com).
