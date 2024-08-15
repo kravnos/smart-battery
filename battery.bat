@@ -47,16 +47,16 @@ EXIT /B
 
 "%WINDIR%\SYSTEM32\WindowsPowerShell\v1.0\powershell.exe" -executionpolicy bypass -file "battery.ps1" %params%
 
-FOR /F "TOKENS=1,2 DELIMS=:" %%A IN ("%TIME%") DO (
-	SET "hh=%%A"
-	SET "mm=%%B"
-)
+:: FOR /F "TOKENS=1,2 DELIMS=:" %%A IN ("%TIME%") DO (
+::	SET "hh=%%A"
+::	SET "mm=%%B"
+:: )
 
 IF NOT "%params%"=="" (
-	IF EXIST "%LOGFILE%" (
-		:: "sendEmail.exe" -f email@domain.com -t email@domain.com -u [%date%] [%hh%:%mm%]: battery.bat -m Session End -s mail.domain.com:26 -xu email@domain.com -xp password -o tls=no -a "%LOGFILE%"
-		:: TIMEOUT /T 2 /NOBREAK
-	)
+::	IF EXIST "%LOGFILE%" (
+::		"sendEmail.exe" -f email@domain.com -t email@domain.com -u [%date%] [%hh%:%mm%]: battery.bat -m Session End -s mail.domain.com:26 -xu email@domain.com -xp password -o tls=no -a "%LOGFILE%"
+::		TIMEOUT /T 2 /NOBREAK
+::	)
 
 	IF "%params%"=="sleep" (
 		IF NOT "%TIMEOUT%"=="" (
