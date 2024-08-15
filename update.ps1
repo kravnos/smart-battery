@@ -125,19 +125,24 @@ if (-not (Test-Path $iniFile)) {
 
 # Read existing content
 try {
-    $existingContent = [System.IO.File]::ReadAllText($iniFile, [System.Text.Encoding]::Unicode)
+    $existingContent = ([System.IO.File]::ReadAllText($iniFile, [System.Text.Encoding]::Unicode)) -replace '(\r?\n|\s)', ''
 } catch {
     Write-Host "Error: Failed to read $iniFile. $_"
 }
 
-# Check if CmdLine entry is present
-if (-not ($existingContent -like "*CmdLine=$currentDir\battery.bat*")) {
-    try {
+# Check if CmdLine entry is present and update scripts.ini accordingly
+try {
+    if (-not $existingContent) {
+        $existingContent = "[Shutdown]`r`n"
+        [System.IO.File]::WriteAllText($iniFile, $existingContent, [System.Text.Encoding]::Unicode)
+    }
+
+    if (-not ($existingContent -like "*CmdLine=$currentDir\battery.bat*")) {
         $cmdLineEntry = "0CmdLine=$currentDir\battery.bat`r`n"
         $parametersEntry = "0Parameters=kill`r`n"
         [System.IO.File]::AppendAllText($iniFile, $cmdLineEntry, [System.Text.Encoding]::Unicode)
         [System.IO.File]::AppendAllText($iniFile, $parametersEntry, [System.Text.Encoding]::Unicode)
-    } catch {
-        Write-Host "Error: Failed to update $iniFile. $_"
     }
+} catch {
+    Write-Host "Error: Failed to update $iniFile. $_"
 }
