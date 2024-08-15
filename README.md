@@ -11,14 +11,18 @@ Note: `Smart Life`, `TCP` and many other devices will also work under Tuya API.
 - **Automatic Task Scheduling**: Sets up scheduled tasks to run the script periodically and during system shutdown events.
 - **Configuration Management**: Easily configurable settings stored in `config.ini`.
 
-## Approved Devices ✅
-
-- **EIGHTREE Smart Plugs**: [Available here](https://amzn.to/4cmppw0) 🔌
-
 ## Requirements 🛠️
 
 - Windows 10/11 operating system.
 - An approved smart device that is controlled via Tuya's API.
+
+## Approved Devices ✅
+
+- **EIGHTREE Smart Plug**: [Available Here](https://amzn.to/4cmppw0)
+- **RENO SUPPLIES Smart Plug**: [Available Here](https://amzn.to/4dJxDzl)
+- **GNCC Mini Smart Plug**: [Available Here](https://amzn.to/3X5EwWo)
+- **WISEBOT Mini Smart Plug**: [Available Here](https://amzn.to/3AzdUUC)
+...and many more.
 
 ## Installation 🚀
 
