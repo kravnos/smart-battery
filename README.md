@@ -22,6 +22,7 @@ Note: `Smart Life`, `TCP` and many other devices will also work under Tuya API.
 - **RENO SUPPLIES Smart Plug**: [Available Here](https://amzn.to/4dJxDzl)
 - **GNCC Mini Smart Plug**: [Available Here](https://amzn.to/3X5EwWo)
 - **WISEBOT Mini Smart Plug**: [Available Here](https://amzn.to/3AzdUUC)
+
 ...and many more.
 
 ## Installation 🚀
