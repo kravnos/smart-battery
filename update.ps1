@@ -130,8 +130,8 @@ try {
     Write-Host "Error: Failed to read $iniFile. $_"
 }
 
-# Check if 0CmdLine= entry is present
-if ($existingContent -notmatch "0CmdLine=") {
+# Check if CmdLine entry is present
+if (-not ($existingContent -like "*CmdLine=$currentDir\battery.bat*")) {
     try {
         $cmdLineEntry = "0CmdLine=$currentDir\battery.bat`r`n"
         $parametersEntry = "0Parameters=kill`r`n"
