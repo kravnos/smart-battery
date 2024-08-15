@@ -10,7 +10,7 @@ function Update-TaskXML {
     param (
         [string]$xmlPath,
         [string]$currentDir,
-        [int]$sleepTimeoutMinutes
+        [int]$sleepTimeoutMinutes = 0
     )
 
     if (-not (Test-Path $xmlPath)) {
@@ -27,25 +27,8 @@ function Update-TaskXML {
         $namespaceManager = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
         $namespaceManager.AddNamespace("ns", $namespace)
 
-        $execNodes = $xml.SelectNodes("//ns:Exec/ns:Command", $namespaceManager)
-        foreach ($node in $execNodes) {
-            $fileName = [System.IO.Path]::GetFileName($node.InnerText)
-            $node.InnerText = Join-Path -Path $currentDir -ChildPath $fileName
-        }
-
-        $workingDirNodes = $xml.SelectNodes("//ns:Exec/ns:WorkingDirectory", $namespaceManager)
-        foreach ($node in $workingDirNodes) {
-            $node.InnerText = $currentDir
-        }
-
         if ($xmlPath -eq $task2XML) {
-            $durationNode = $xml.SelectNodes("//ns:IdleSettings/ns:Duration", $namespaceManager)
-            foreach ($node in $durationNode) {
-                $newDuration = "PT${sleepTimeoutMinutes}M"
-                $node.InnerText = $newDuration
-            }
-
-            $idleTriggerEnabledNode = $xml.SelectNodes("//ns:Triggers/ns:IdleTrigger/ns:Enabled", $namespaceManager)
+            $idleTriggerEnabledNode = $xml.SelectNodes("//ns:Task//ns:Triggers/ns:IdleTrigger/ns:Enabled", $namespaceManager)
             foreach ($node in $idleTriggerEnabledNode) {
                 if ($sleepTimeoutMinutes -gt 0) {
                     $node.InnerText = "true"
@@ -53,7 +36,25 @@ function Update-TaskXML {
                     $node.InnerText = "false"
                 }
             }
+
+            $durationNode = $xml.SelectNodes("//ns:Task//ns:Settings//ns:IdleSettings/ns:Duration", $namespaceManager)
+            foreach ($node in $durationNode) {
+                $newDuration = "PT${sleepTimeoutMinutes}M"
+                $node.InnerText = $newDuration
+            }
         }
+
+        $execNodes = $xml.SelectNodes("//ns:Task//ns:Actions//ns:Exec/ns:Command", $namespaceManager)
+        foreach ($node in $execNodes) {
+            $fileName = [System.IO.Path]::GetFileName($node.InnerText)
+            $node.InnerText = Join-Path -Path $currentDir -ChildPath $fileName
+        }
+
+        $workingDirNodes = $xml.SelectNodes("//ns:Task//ns:Actions//ns:Exec/ns:WorkingDirectory", $namespaceManager)
+        foreach ($node in $workingDirNodes) {
+            $node.InnerText = $currentDir
+        }
+
 
         # Save the updated XML
         $xml.Save($xmlPath)
