@@ -11,10 +11,14 @@ Note: `Smart Life`, `TCP` and many other devices will also work under Tuya API.
 - **Automatic Task Scheduling**: Sets up scheduled tasks to run the script periodically and during system shutdown events.
 - **Configuration Management**: Easily configurable settings stored in `config.ini`.
 
+## Approved Devices ✅
+
+- **EIGHTREE Smart Plugs**: [Available here](https://amzn.to/4cmppw0) 🔌
+
 ## Requirements 🛠️
 
 - Windows 10/11 operating system.
-- A smart device that is controlled via Tuya's API.
+- An approved smart device that is controlled via Tuya's API.
 
 ## Installation 🚀
 
@@ -68,7 +72,7 @@ This script will:
 
 ## Troubleshooting 🛠️
 
-- Ensure that your Wi-Fi name is correctly specified in `config.ini`.
+- Ensure that your Wi-Fi SSID name is correctly specified in `config.ini`.
 - Make sure that the smart device name matches the one used in your Tuya app.
 - Check the logs for any error messages if the script is not functioning as expected.
 
