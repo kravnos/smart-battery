@@ -113,36 +113,17 @@ Update-TaskXML -xmlPath $task1XML -currentDir $currentDir
 Update-TaskXML -xmlPath $task2XML -currentDir $currentDir -sleepTimeoutMinutes $sleepTimeoutMinutes
 
 # Handle the scripts.ini file
-if (-not (Test-Path $iniFile)) {
-    try {
-        $content = "[Shutdown]`r`n"
-        [System.IO.File]::WriteAllText($iniFile, $content, [System.Text.Encoding]::Unicode)
-        (Get-Item $iniFile).Attributes = [System.IO.FileAttributes]::Hidden
-    } catch {
-        Write-Host "Error: Failed to create or modify $iniFile. $_"
-    }
-}
-
-# Read existing content
 try {
-    $existingContent = ([System.IO.File]::ReadAllText($iniFile, [System.Text.Encoding]::Unicode)) -replace '(\r?\n|\s)', ''
-} catch {
-    Write-Host "Error: Failed to read $iniFile. $_"
-}
-
-# Check if CmdLine entry is present and update scripts.ini accordingly
-try {
-    if (-not $existingContent) {
-        $existingContent = "[Shutdown]`r`n"
-        [System.IO.File]::WriteAllText($iniFile, $existingContent, [System.Text.Encoding]::Unicode)
+    if (Test-Path $iniFile) {
+        Remove-Item $iniFile -Force
     }
 
-    if (-not ($existingContent -like "*CmdLine=$currentDir\battery.bat*")) {
-        $cmdLineEntry = "0CmdLine=$currentDir\battery.bat`r`n"
-        $parametersEntry = "0Parameters=kill`r`n"
-        [System.IO.File]::AppendAllText($iniFile, $cmdLineEntry, [System.Text.Encoding]::Unicode)
-        [System.IO.File]::AppendAllText($iniFile, $parametersEntry, [System.Text.Encoding]::Unicode)
-    }
+    # Recreate the file with the necessary content
+    $content = "[Shutdown]`r`n0CmdLine=$currentDir\battery.bat`r`n0Parameters=kill`r`n"
+    [System.IO.File]::WriteAllText($iniFile, $content, [System.Text.Encoding]::Unicode)
+
+    # Apply file attributes
+    (Get-Item $iniFile).Attributes = [System.IO.FileAttributes]::Hidden
 } catch {
     Write-Host "Error: Failed to update $iniFile. $_"
 }
