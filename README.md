@@ -78,7 +78,7 @@ This script will:
 ## Troubleshooting 🛠️
 
 - Ensure that your Wi-Fi SSID name is correctly specified in `config.ini`.
-- Make sure that the smart device name matches the one used in your Tuya / Smart Lhings app.
+- Make sure that the smart device name matches the one used in your Tuya / Smart Life app.
 - Check the logs for any error messages if the script is not functioning as expected.
 
 ## License
