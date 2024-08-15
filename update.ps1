@@ -1,9 +1,6 @@
 # Get the current directory where the script is running
 $currentDir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 
-# Path to the INI file
-$iniFile = Join-Path -Path $env:WINDIR -ChildPath "System32\GroupPolicy\Machine\Scripts\scripts.ini"
-
 # Paths to the XML files
 $task1XML = "BATTERY.XML"
 $task2XML = "BATTERY-SLEEP.XML"
@@ -111,19 +108,3 @@ if ($sleepTimeoutMinutes -le 0) {
 # Update the XML files
 Update-TaskXML -xmlPath $task1XML -currentDir $currentDir
 Update-TaskXML -xmlPath $task2XML -currentDir $currentDir -sleepTimeoutMinutes $sleepTimeoutMinutes
-
-# Handle the scripts.ini file
-try {
-    if (Test-Path $iniFile) {
-        Remove-Item $iniFile -Force
-    }
-
-    # Recreate the file with the necessary content
-    $content = "[Shutdown]`r`n0CmdLine=$currentDir\battery.bat`r`n0Parameters=kill`r`n"
-    [System.IO.File]::WriteAllText($iniFile, $content, [System.Text.Encoding]::Unicode)
-
-    # Apply file attributes
-    (Get-Item $iniFile).Attributes = [System.IO.FileAttributes]::Hidden
-} catch {
-    Write-Host "Error: Failed to update $iniFile. $_"
-}

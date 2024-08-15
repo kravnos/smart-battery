@@ -31,7 +31,7 @@ reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Ma
 reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\Shutdown\0\0" /f
 reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\Shutdown\0" /f
 
-set iniFile=%WINDIR%\System32\GroupPolicy\Machine\Scripts\scripts.ini
+set "iniFile=%WINDIR%\System32\GroupPolicy\Machine\Scripts\scripts.ini"
 
 if exist "%iniFile%" (
     attrib -h "%iniFile%"
