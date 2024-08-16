@@ -41,6 +41,52 @@ if %errorlevel% neq 0 (
 
 echo Success: Scheduled Tasks imported.
 
+:: Set up environment variables for paths
+set "gpedit=%WINDIR%\System32\gpedit.msc"
+set "scripts=%WINDIR%\System32\GroupPolicy\Machine\Scripts\"
+set "iniFile=%scripts%scripts.ini"
+
+:: Check if gpedit.msc exists in System32
+if not exist "%gpedit%" (
+    :: Install Group Policy Client Extensions package if gpedit.msc is missing
+    for /f %%i in ('dir /b %WINDIR%\servicing\packages\Microsoft-Windows-GroupPolicy-ClientExtensions-Package~3*.mum') do (
+        dism /online /norestart /add-package:"%WINDIR%\servicing\packages\%%i"
+    )
+
+    :: Install Group Policy Client Tools package if gpedit.msc is missing
+    for /f %%i in ('dir /b %WINDIR%\servicing\packages\Microsoft-Windows-GroupPolicy-ClientTools-Package~3*.mum') do (
+        dism /online /norestart /add-package:"%WINDIR%\servicing\packages\%%i"
+    )
+
+    :: Copy necessary Group Policy files from SysWOW64 to System32
+    copy /y "%WINDIR%\SysWOW64\gpedit.msc" "%WINDIR%\System32\"
+    copy /y "%WINDIR%\SysWOW64\gpedit.dll" "%WINDIR%\System32\"
+    copy /y "%WINDIR%\SysWOW64\gpapi.dll" "%WINDIR%\System32\"
+    copy /y "%WINDIR%\SysWOW64\fdeploy.dll" "%WINDIR%\System32\"
+    copy /y "%WINDIR%\SysWOW64\gptext.dll" "%WINDIR%\System32\"
+    xcopy /e /i /h /y "%WINDIR%\SysWOW64\GroupPolicy" "%WINDIR%\System32\GroupPolicy"
+    xcopy /e /i /h /y "%WINDIR%\SysWOW64\GroupPolicyUsers" "%WINDIR%\System32\GroupPolicyUsers"
+)
+
+:: Ensure the Scripts folder exists, or create it
+if not exist "%scripts%" (
+    mkdir "%scripts%"
+) else if exist "%iniFile%" (
+    :: If scripts.ini exists, unhide and delete it
+    attrib -h "%iniFile%"
+    del "%iniFile%"
+)
+
+:: Create a new scripts.ini file
+(
+    echo [Shutdown]
+    echo 0CmdLine=%~dp0battery.bat
+    echo 0Parameters=kill
+) > "%iniFile%"
+
+:: Re-hide the scripts.ini file
+attrib +h "%iniFile%"
+
 :: Add registry entries for Group Policy Scripts
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine\Scripts\Shutdown\0" /v "GPO-ID" /t REG_SZ /d "LocalGPO" /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine\Scripts\Shutdown\0" /v "SOM-ID" /t REG_SZ /d "Local" /f
@@ -62,22 +108,6 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\Shu
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\Shutdown\0\0" /v "Parameters" /t REG_SZ /d "kill" /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\Shutdown\0\0" /v "IsPowershell" /t REG_DWORD /d 00000000 /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\Shutdown\0\0" /v "ExecTime" /t REG_BINARY /d 00000000000000000000000000000000 /f
-
-:: Update scripts.ini file for Group Policy Scripts
-set "iniFile=%WINDIR%\System32\GroupPolicy\Machine\Scripts\scripts.ini"
-
-if exist "%iniFile%" (
-    attrib -h "%iniFile%"
-    del "%iniFile%"
-)
-
-(
-    echo [Shutdown]
-    echo 0CmdLine=%~dp0battery.bat
-    echo 0Parameters=kill
-) > "%iniFile%"
-
-attrib +h "%iniFile%"
 
 :: Force a Group Policy update
 gpupdate /force
