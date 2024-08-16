@@ -16,16 +16,12 @@ SET "LOGFILE=logs\battery-%date%.log"
 
 :: Check available sleep states
 FOR /F "tokens=*" %%A IN ('powercfg /AVAILABLESLEEPSTATES') DO (
-    IF "%%A"=="The following sleep states are not available on this system:" (
-        GOTO :BREAK
-    )
-
     IF "%%A"=="Standby (S3)" (
         SET "SLEEP=1"
-    )
-
-    IF "%%A"=="Hibernate" (
+    ) ELSE IF "%%A"=="Hibernate" (
         SET "HIBERNATE=1"
+    ) ELSE IF "%%A"=="The following sleep states are not available on this system:" (
+        GOTO :BREAK
     )
 )
 :BREAK
