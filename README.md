@@ -13,7 +13,7 @@ Note: `Smart Life`, `TCP` and many other devices will also work under Tuya API.
 
 ## Requirements 🛠️
 
-- Windows 10/11 operating system.
+- Windows 10/11 operating system with Group Policy.
 - An approved smart device that is controlled via Tuya's API.
 
 ## Approved Devices ✅
