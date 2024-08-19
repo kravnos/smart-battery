@@ -34,7 +34,7 @@ Note: `Smart Life`, `TCP` and many other devices will also work under Tuya API.
 
 ### Step 2: Configure the Script
 
-1. Open the `config.ini` file created by the script.
+1. Open the `config.ini` file provided.
 2. Update the configuration settings as needed:
   - **BATTERY_HIGH**: The battery percentage above which the device should be turned off (default: 85 percent).
   - **BATTERY_LOW**: The battery percentage below which the device should be turned on (default: 15 percent).
