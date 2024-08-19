@@ -2,13 +2,22 @@
 
 :: Get admin permissions
 SET "params=%*"
-cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || ( echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+CD /D "%~dp0"
+IF EXIST "%temp%\getadmin.vbs" (
+    DEL /Q "%temp%\getadmin.vbs"
+)
+
+FSUTIL DIRTY QUERY %systemdrive% 1>nul 2>nul || (
+    ECHO SET UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/K CD ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs"
+    "%temp%\getadmin.vbs"
+    EXIT /B
+)
 
 :: Initialize variables
-SET "TIMEOUT="    :: Clear TIMEOUT variable
-SET "SUSPEND="    :: Determines whether to sleep or hibernate
 SET "SLEEP=0"     :: Determines if sleep is available
 SET "HIBERNATE=0" :: Determines if hibernate is available
+SET "SUSPEND=0"   :: Determines whether to sleep or hibernate
+SET "TIMEOUT=0"   :: Determines how long to sleep or hibernate
 SET "IDLE=900"    :: Time in seconds for task scheduler idle check
 SET "date=%date: =-%"
 SET "date=%date:/=-%"
@@ -28,23 +37,18 @@ FOR /F "tokens=*" %%A IN ('powercfg /AVAILABLESLEEPSTATES') DO (
 
 :: Calculate the timeout based on the current power settings
 IF "%SLEEP%"=="1" (
+    SET "SUSPEND=0"
     FOR /F "tokens=2 delims=:" %%A IN ('powercfg /QUERY SCHEME_CURRENT SUB_SLEEP STANDBYIDLE ^| findstr /I /C:"Current DC Power Setting Index:"') DO (
         SET /A "TIMEOUT=%%A-%IDLE%"
-        SET "SUSPEND=0"
     )
 )
 
 IF "%HIBERNATE%"=="1" (
-    :: If TIMEOUT is not set, default to 0
-    IF "%TIMEOUT%"=="" (
-        SET "TIMEOUT=0"
-    )
-
     :: Adjust timeout if hibernate settings are present
     IF %TIMEOUT% LEQ 0 (
+        SET "SUSPEND=1"
         FOR /F "tokens=1 delims=:" %%B IN ('powercfg /QUERY SCHEME_CURRENT SUB_SLEEP HIBERNATEIDLE ^| findstr /I /C:"Current DC Power Setting Index:"') DO (
             SET /A "TIMEOUT=%%B-%IDLE%"
-            SET "SUSPEND=1"
         )
     )
 )
@@ -91,9 +95,7 @@ IF NOT "%params%"=="" (
     IF "%params%"=="sleep" (
         IF NOT "%TIMEOUT%"=="" (
             IF %TIMEOUT% GTR 0 (
-                IF NOT "%SUSPEND%"=="" (
-                    rundll32.exe powrprof.dll,SetSuspendState %SUSPEND%,1,%SUSPEND%
-                )
+                rundll32.exe powrprof.dll,SetSuspendState %SUSPEND%,1,%SUSPEND%
             )
         )
     )

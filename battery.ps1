@@ -4,8 +4,9 @@ param([string]$kill = $null)
 # Default configuration values
 $defaultConfig = @"
 [Settings]
-BATTERY_HIGH=80
-BATTERY_LOW=20
+BATTERY_HIGH=85
+BATTERY_LOW=15
+BATTERY_VARIANCE=5
 tokenExpiry=10
 idExpiry=17
 loopTime=600
@@ -71,6 +72,7 @@ function Get-ConfigValue {
 # Read values from the config file
 $BATTERY_HIGH = [int](Get-ConfigValue "BATTERY_HIGH")
 $BATTERY_LOW = [int](Get-ConfigValue "BATTERY_LOW")
+$BATTERY_VARIANCE = [int](Get-ConfigValue "BATTERY_VARIANCE")
 $tokenExpiry = [int](Get-ConfigValue "tokenExpiry")
 $idExpiry = [int](Get-ConfigValue "idExpiry")
 $loopTime = [int](Get-ConfigValue "loopTime")
@@ -87,10 +89,11 @@ $idFile = "battery_id.txt"
 $tokenCache = $null
 $idCache = $null
 $curDate = Get-Date
+$randomVariance = Get-Random -Minimum -$BATTERY_VARIANCE -Maximum ($BATTERY_VARIANCE + 1)
 
 # Check if default values are valid
-if ($BATTERY_HIGH -le $BATTERY_LOW -or $BATTERY_HIGH -gt 100 -or $BATTERY_LOW -le 5) {
-    Log-Message "Error: Invalid values for BATTERY_HIGH and BATTERY_LOW"
+if (($BATTERY_HIGH -le $BATTERY_LOW) -or (($BATTERY_HIGH + $BATTERY_VARIANCE) -gt 100) -or (($BATTERY_LOW - $BATTERY_VARIANCE) -le 5)) {
+    Log-Message "Error: Invalid values for BATTERY_HIGH, BATTERY_LOW or BATTERY_VARIANCE."
 }
 
 # Check if system returns any battery percentage
@@ -135,7 +138,7 @@ function Request-Token {
             # Fail response
             Log-Message "Error: $($response.errorMsg)"
         } else {
-            Log-Message "Error: Unexpected response format."
+            Log-Message "Error: Unexpected response.`n`n$($response | ConvertTo-Json)"
         }
     } catch {
         Log-Message "Error: Failed to request access token. $_"
@@ -183,7 +186,7 @@ function Request-DeviceID {
         } elseif ($response.header.code -eq "FrequentlyInvoke") {
             Log-Message "Error: Discovery frequently invoked."
         } else {
-            Log-Message "Error: Unexpected response format or no device found."
+            Log-Message "Error: Unexpected response.`n`n$($response | ConvertTo-Json)"
         }
     } catch {
         Log-Message "Error: Failed to request device ID. $_"
@@ -281,10 +284,10 @@ function Action-Device {
             Log-Message "Success: Device $deviceName turned $action."
         } elseif ($response.header.code -eq "NoSuchTarget") {
             Log-Message "Error: Device $deviceName not found."
-        } elseif ($response.header.code -eq "DependentServiceUnavailable") {
-            Log-Message "Error: Dependent service unavailable."
+        } elseif ($response.header.code -eq "TargetOffline") {
+            Log-Message "Error: Device $deviceName is offline."
         } else {
-            Log-Message "Error: Unexpected response format."
+            Log-Message "Error: Unexpected response.`n`n$($response | ConvertTo-Json)"
         }
     } catch {
         Log-Message "Error: Failed to execute device action. $_"
@@ -333,7 +336,7 @@ while ($true) {
     $polarity = if ($pluggedIn) { "++" } else { "--" }
     Log-Message "Battery: $batteryPercent$polarity"
 
-    if ($batteryPercent -ge $BATTERY_HIGH -and $pluggedIn) {
+    if ($batteryPercent -ge ($BATTERY_HIGH + $randomVariance) -and $pluggedIn) {
         # Ensure token and device ID are up to date
         $result = TokenAndDeviceID
         $token = $result[0]
@@ -341,7 +344,7 @@ while ($true) {
 
         # Turn off the device
         Action-Device -accessToken $token -deviceID $deviceID -value 0
-    } elseif ($batteryPercent -le $BATTERY_LOW -and -not $pluggedIn) {
+    } elseif ($batteryPercent -le ($BATTERY_LOW + $randomVariance) -and -not $pluggedIn) {
         # Ensure token and device ID are up to date
         $result = TokenAndDeviceID
         $token = $result[0]

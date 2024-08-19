@@ -2,7 +2,16 @@
 
 :: Get admin permissions
 SET "params=%*"
-cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) && fsutil dirty query %systemdrive% 1>nul 2>nul || ( echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/k cd ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs" && "%temp%\getadmin.vbs" && exit /B )
+CD /D "%~dp0"
+IF EXIST "%temp%\getadmin.vbs" (
+    DEL /Q "%temp%\getadmin.vbs"
+)
+
+FSUTIL DIRTY QUERY %systemdrive% 1>nul 2>nul || (
+    ECHO SET UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "cmd.exe", "/K CD ""%~sdp0"" && %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs"
+    "%temp%\getadmin.vbs"
+    EXIT /B
+)
 
 :: Paths to the XML files for Task Scheduler
 set "batteryTaskXML=BATTERY.XML"
@@ -48,24 +57,15 @@ set "iniFile=%scripts%scripts.ini"
 
 :: Check if gpedit.msc exists in System32
 if not exist "%gpedit%" (
-    :: Install Group Policy Client Extensions package if gpedit.msc is missing
-    for /f %%i in ('dir /b %WINDIR%\servicing\packages\Microsoft-Windows-GroupPolicy-ClientExtensions-Package~3*.mum') do (
-        dism /online /norestart /add-package:"%WINDIR%\servicing\packages\%%i"
-    )
-
-    :: Install Group Policy Client Tools package if gpedit.msc is missing
+    :: Install Group Policy Client Tools package
     for /f %%i in ('dir /b %WINDIR%\servicing\packages\Microsoft-Windows-GroupPolicy-ClientTools-Package~3*.mum') do (
         dism /online /norestart /add-package:"%WINDIR%\servicing\packages\%%i"
     )
 
-    :: Copy necessary Group Policy files from SysWOW64 to System32
-    copy /y "%WINDIR%\SysWOW64\gpedit.msc" "%WINDIR%\System32\"
-    copy /y "%WINDIR%\SysWOW64\gpedit.dll" "%WINDIR%\System32\"
-    copy /y "%WINDIR%\SysWOW64\gpapi.dll" "%WINDIR%\System32\"
-    copy /y "%WINDIR%\SysWOW64\fdeploy.dll" "%WINDIR%\System32\"
-    copy /y "%WINDIR%\SysWOW64\gptext.dll" "%WINDIR%\System32\"
-    xcopy /e /i /h /y "%WINDIR%\SysWOW64\GroupPolicy" "%WINDIR%\System32\GroupPolicy"
-    xcopy /e /i /h /y "%WINDIR%\SysWOW64\GroupPolicyUsers" "%WINDIR%\System32\GroupPolicyUsers"
+    :: Install Group Policy Client Extensions package
+    for /f %%i in ('dir /b %WINDIR%\servicing\packages\Microsoft-Windows-GroupPolicy-ClientExtensions-Package~3*.mum') do (
+        dism /online /norestart /add-package:"%WINDIR%\servicing\packages\%%i"
+    )
 )
 
 :: Ensure the Scripts folder exists, or create it
@@ -74,7 +74,7 @@ if not exist "%scripts%" (
 ) else if exist "%iniFile%" (
     :: If scripts.ini exists, unhide and delete it
     attrib -h "%iniFile%"
-    del "%iniFile%"
+    del /q "%iniFile%"
 )
 
 :: Create a new scripts.ini file
@@ -115,5 +115,15 @@ gpupdate /force
 echo Success: Group Policy Task imported.
 echo Installation Complete.
 
-pause
+:: Prompt for reboot
+if not exist "%gpedit%" (
+    set /p reboot="Group Policy Client Tools were installed. Would you like to reboot now? (Y/N): "
+    if /i "%reboot%"=="Y" (
+        echo Rebooting the system...
+        shutdown /r /t 0
+    )
+) else (
+    pause
+)
+
 exit /b 0
