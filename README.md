@@ -38,7 +38,7 @@ Note: `Smart Life`, `TCP` and many other devices will also work under Tuya API.
 2. Update the configuration settings as needed:
   - **BATTERY_HIGH**: The battery percentage above which the device should be turned off (default: 85 percent).
   - **BATTERY_LOW**: The battery percentage below which the device should be turned on (default: 15 percent).
-  - **BATTERY_VARIANCE**: The battery percentage variance above or below BATTERY_HIGH and BATTERY_LOW (default: 5 percent).
+  - **BATTERY_VARIANCE**: The battery percentage variance +/- for BATTERY_HIGH and BATTERY_LOW (default: 5 percent).
   - **tokenExpiry**: The number of days before the token expires and needs to be refreshed (default: 10 days).
   - **idExpiry**: The number of minutes before the device ID expires and needs to be refreshed (default: 17 minutes).
   - **loopTime**: The interval between each check of the battery status (default: 600 seconds).
