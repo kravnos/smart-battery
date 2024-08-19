@@ -57,7 +57,7 @@ if exist "%idFile%" (
 if exist "%tokenFile%" (
     del /q "%tokenFile%"
 )
-if exist "%logsDir" (
+if exist "%logsDir%" (
     rd /s /q "%logsDir%"
 )
 echo Success: Cleaned up files.
