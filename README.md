@@ -29,7 +29,7 @@ Note: `Smart Life`, `TCP` and many other devices will also work under Tuya API.
 
 ### Step 1: Download and Extract
 
-1. Download the script files.
+1. Download the latest release files: [Available Here](https://github.com/kravnos/smart-battery/releases/latest) 
 2. Extract the contents to a folder on your Windows machine.
 
 ### Step 2: Configure the Script
@@ -78,7 +78,6 @@ This script will:
 
 ## Troubleshooting 🛠️
 
-- Ensure that your Wi-Fi SSID name is correctly specified in `config.ini`.
 - Make sure that the smart device name matches the one used in your Tuya / Smart Life app.
 - Check the logs for any error messages if the script is not functioning as expected.
 
