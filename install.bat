@@ -115,15 +115,17 @@ gpupdate /force
 echo Success: Group Policy Task imported.
 echo Installation Complete.
 
-:: Prompt for reboot
-if not exist "%gpedit%" (
-    set /p reboot="Group Policy Client Tools were installed. Would you like to reboot now? (Y/N): "
-    if /i "%reboot%"=="Y" (
-        echo Rebooting the system...
-        shutdown /r /t 0
-    )
-) else (
+if exist "%gpedit%" (
     pause
+    goto :end
 )
 
+:: Prompt for reboot
+set /p reboot="Would you like to reboot now? (Y/N): "
+if /i "%reboot:~0,1%"=="Y" (
+    echo Rebooting the system...
+    shutdown /r /t 0
+)
+
+:end
 exit /b 0
