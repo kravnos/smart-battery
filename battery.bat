@@ -47,7 +47,7 @@ IF "%HIBERNATE%"=="1" (
     :: Adjust timeout if hibernate settings are present
     IF %TIMEOUT% LEQ 0 (
         SET "SUSPEND=1"
-        FOR /F "tokens=1 delims=:" %%B IN ('powercfg /QUERY SCHEME_CURRENT SUB_SLEEP HIBERNATEIDLE ^| findstr /I /C:"Current DC Power Setting Index:"') DO (
+        FOR /F "tokens=2 delims=:" %%B IN ('powercfg /QUERY SCHEME_CURRENT SUB_SLEEP HIBERNATEIDLE ^| findstr /I /C:"Current DC Power Setting Index:"') DO (
             SET /A "TIMEOUT=%%B-%IDLE%"
         )
     )
