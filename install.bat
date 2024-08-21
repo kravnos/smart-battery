@@ -115,9 +115,10 @@ gpupdate /force
 echo Success: Group Policy Task imported.
 echo Installation Complete.
 
+:: Skip reboot
 if exist "%gpedit%" (
     pause
-    goto :end
+    exit /b 0
 )
 
 :: Prompt for reboot
@@ -127,5 +128,4 @@ if /i "%reboot:~0,1%"=="Y" (
     shutdown /r /t 0
 )
 
-:end
 exit /b 0
