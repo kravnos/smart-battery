@@ -90,7 +90,7 @@ attrib +h "%iniFile%"
 :: Add registry entries for Group Policy Scripts
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine\Scripts\Shutdown\0" /v "GPO-ID" /t REG_SZ /d "LocalGPO" /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine\Scripts\Shutdown\0" /v "SOM-ID" /t REG_SZ /d "Local" /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine\Scripts\Shutdown\0" /v "FileSysPath" /t REG_SZ /d "C:\\Windows\\System32\\GroupPolicy\\Machine" /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine\Scripts\Shutdown\0" /v "FileSysPath" /t REG_SZ /d "%systemdrive%\\Windows\\System32\\GroupPolicy\\Machine" /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine\Scripts\Shutdown\0" /v "DisplayName" /t REG_SZ /d "Local Group Policy" /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine\Scripts\Shutdown\0" /v "GPOName" /t REG_SZ /d "Local Group Policy" /f
 
@@ -100,7 +100,7 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machi
 
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\Shutdown\0" /v "GPO-ID" /t REG_SZ /d "LocalGPO" /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\Shutdown\0" /v "SOM-ID" /t REG_SZ /d "Local" /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\Shutdown\0" /v "FileSysPath" /t REG_SZ /d "C:\\Windows\\System32\\GroupPolicy\\Machine" /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\Shutdown\0" /v "FileSysPath" /t REG_SZ /d "%systemdrive%\\Windows\\System32\\GroupPolicy\\Machine" /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\Shutdown\0" /v "DisplayName" /t REG_SZ /d "Local Group Policy" /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\Shutdown\0" /v "GPOName" /t REG_SZ /d "Local Group Policy" /f
 
