@@ -196,7 +196,7 @@ function Request-DeviceID {
 # Function to ensure token and device ID are not expired
 function TokenAndDeviceID {
     # Ensure token is valid
-    if (([string]::IsNullOrWhiteSpace($kill)) -and (-not (Test-Path $tokenFile) -or ((Get-Date) -gt (Get-Item $tokenFile).LastWriteTime.AddDays($tokenExpiry)))) {
+    if (-not (Test-Path $tokenFile) -or ((Get-Date) -gt (Get-Item $tokenFile).LastWriteTime.AddDays($tokenExpiry))) {
         $tokenCache = $null
 
         Request-Token
@@ -220,7 +220,7 @@ function TokenAndDeviceID {
     }
 
     # Ensure device ID is valid
-    if (([string]::IsNullOrWhiteSpace($kill)) -and (-not (Test-Path $idFile) -or (((Get-Date) -gt (Get-Item $idFile).LastWriteTime.AddMinutes($idExpiry)) -and (($curDate) -gt (Get-Item $idFile).LastWriteTime)))) {
+    if (-not (Test-Path $idFile) -or (((Get-Date) -gt (Get-Item $idFile).LastWriteTime.AddMinutes($idExpiry)) -and (($curDate) -gt (Get-Item $idFile).LastWriteTime))) {
         $idCache = $null
 
         Request-DeviceID -accessToken $tokenCache
@@ -296,10 +296,14 @@ function Action-Device {
 
 # Turn off the device with kill parameter
 if (-not [string]::IsNullOrWhiteSpace($kill)) {
+    $wifiSSID = (Get-NetConnectionProfile).Name
     Log-Message "Warning: Sleep or shutdown event detected."
 
-    if ((Get-NetConnectionProfile).Name -like "*$wifiName*") {
-        if ((Get-WmiObject Win32_Battery).BatteryStatus -eq 2) {
+    if ($wifiSSID -like "*$wifiName*") {
+        $battery = Get-WmiObject Win32_Battery
+        $pluggedIn = $battery.BatteryStatus -eq 2
+
+        if ($pluggedIn) {
             if ($curDate -lt (Get-Date).AddSeconds(2)) {
                 $result = TokenAndDeviceID
                 $token = $result[0]
