@@ -4,12 +4,12 @@ param([string]$kill = $null)
 # Default configuration values
 $defaultConfig = @"
 [Settings]
-BATTERY_HIGH=85
-BATTERY_LOW=15
-BATTERY_VARIANCE=5
+BATTERY_HIGH=88
+BATTERY_LOW=12
+BATTERY_VARIANCE=2
 tokenExpiry=10
 idExpiry=17
-loopTime=600
+loopTime=300
 wifiName=SSID
 deviceName=DEVICENAME
 userName=email@domain.com
@@ -88,6 +88,7 @@ $tokenFile = "battery_token.txt"
 $idFile = "battery_id.txt"
 $tokenCache = $null
 $idCache = $null
+$init = $null
 $curDate = Get-Date
 $randomVariance = Get-Random -Minimum -$BATTERY_VARIANCE -Maximum ($BATTERY_VARIANCE + 1)
 
@@ -348,7 +349,7 @@ while ($true) {
 
         # Turn off the device
         Action-Device -accessToken $token -deviceID $deviceID -value 0
-    } elseif ($batteryPercent -le ($BATTERY_LOW + $randomVariance) -and -not $pluggedIn) {
+    } elseif (($batteryPercent -le ($BATTERY_LOW + $randomVariance) -or -not $init) -and -not $pluggedIn) {
         # Ensure token and device ID are up to date
         $result = TokenAndDeviceID
         $token = $result[0]
@@ -358,6 +359,7 @@ while ($true) {
         Action-Device -accessToken $token -deviceID $deviceID -value 1
     }
 
+    $init = $true
     Start-Sleep -Seconds $loopTime
 }
 
